@@ -1,0 +1,8 @@
+django-debug-toolbar==6.2.0
+
+ruff==0.15.6
+mypy==1.19.1
+isort==8.0.1
+
+# Types
+django-stubs==6.0.3

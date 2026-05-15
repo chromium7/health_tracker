@@ -1,0 +1,38 @@
+exclude: '(.*/settings/.*\.py|.*/migrations/.*\.py)'
+
+repos:
+  # === Code Style & Formatting (ruff) ===
+  - repo: local
+    hooks:
+      - id: ruff
+        name: Ruff Check
+        entry: python -m ruff check
+        language: system
+        files: \.py$
+        args: ["--fix", "--exit-non-zero-on-fix"]
+      - id: ruff-format
+        name: Ruff Format
+        entry: python -m ruff format
+        language: system
+        files: \.py$
+
+  # === Type Checking (mypy) ===
+  - repo: local
+    hooks:
+      - id: mypy
+        name: Mypy Type Check
+        entry: python -m mypy
+        language: system
+        files: \.py$
+        args: ["--ignore-missing-imports", "--disallow-untyped-defs", "--follow-imports=silent"]
+        description: Runs mypy
+
+  # === Security Checking (bandit) ===
+  - repo: local
+    hooks:
+      - id: bandit
+        name: Bandit Security Check
+        entry: python -m bandit
+        language: system
+        files: \.py$
+        args: ["--quiet", "-c", "bandit.yml"]
