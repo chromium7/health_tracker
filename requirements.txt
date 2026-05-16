@@ -6,7 +6,7 @@ redis==7.3.0
 django-redis==6.0.0
 psycopg==3.3.3
 
-Pillow==12.1.1
+Pillow==12.2.0
 
 # python-magic upgrade path for document uploads in production:
 # python-magic==0.4.27
