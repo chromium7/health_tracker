@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Unggah Dokumen - HealthTracker{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <a class="page-header__back" href="{% url 'document_list' %}" aria-label="Kembali">
+      {% include "_icons.html" with icon="back" size=18 %}
+    </a>
+    <div class="page-header__titles">
+      <p class="page-header__eyebrow">Dokumen</p>
+      <h1 class="page-header__title">Unggah</h1>
+    </div>
+  </header>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="field">
+        {% for error in form.non_field_errors %}
+          <p class="field__error">{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="field">
+      <label class="field__label" for="{{ form.title.id_for_label }}">Judul</label>
+      <input class="field__input-control field__input-control--note"
+             type="text"
+             style="font-size: var(--font-size-base); min-height: 0;"
+             name="{{ form.title.name }}"
+             id="{{ form.title.id_for_label }}"
+             value="{{ form.title.value|default_if_none:'' }}"
+             required>
+      {% for error in form.title.errors %}
+        <p class="field__error">{{ error }}</p>
+      {% endfor %}
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="{{ form.notes.id_for_label }}">Catatan <span class="field__label-suffix">(opsional)</span></label>
+      <textarea class="field__input-control field__input-control--note"
+                name="{{ form.notes.name }}"
+                id="{{ form.notes.id_for_label }}">{{ form.notes.value|default_if_none:'' }}</textarea>
+      {% for error in form.notes.errors %}
+        <p class="field__error">{{ error }}</p>
+      {% endfor %}
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="{{ form.file.id_for_label }}">Berkas <span class="field__label-suffix">PDF, JPG, PNG maksimal 10 MB</span></label>
+      <input type="file"
+             name="{{ form.file.name }}"
+             id="{{ form.file.id_for_label }}"
+             accept="application/pdf,image/jpeg,image/png"
+             required>
+      {% for error in form.file.errors %}
+        <p class="field__error">{{ error }}</p>
+      {% endfor %}
+    </div>
+
+    <button class="button button--primary" type="submit">
+      {% include "_icons.html" with icon="upload" size=18 %}
+      <span>Unggah</span>
+    </button>
+  </form>
+{% endblock %}

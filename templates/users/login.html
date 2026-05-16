@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Masuk - HealthTracker{% endblock %}
+
+{% block content %}
+  <section class="login">
+    <h1 class="login__title">HealthTracker</h1>
+
+    <form class="login__form" method="post" action="{% url 'login' %}">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+          <p class="login__error">{{ error }}</p>
+        {% endfor %}
+      {% endif %}
+
+      <div class="login__field">
+        <label class="login__label" for="{{ form.username.id_for_label }}">Nama Pengguna</label>
+        <input class="login__input"
+               type="text"
+               name="{{ form.username.name }}"
+               id="{{ form.username.id_for_label }}"
+               value="{{ form.username.value|default_if_none:'' }}"
+               autocomplete="username"
+               maxlength="150"
+               required>
+      </div>
+
+      <div class="login__field">
+        <label class="login__label" for="{{ form.pin.id_for_label }}">{{ form.pin.label }}</label>
+        <input class="login__input"
+               type="password"
+               name="{{ form.pin.name }}"
+               id="{{ form.pin.id_for_label }}"
+               autocomplete="current-password"
+               inputmode="numeric"
+               pattern="[0-9]*"
+               maxlength="4"
+               minlength="4"
+               required>
+      </div>
+
+      <button class="button button--primary" type="submit">Masuk</button>
+    </form>
+  </section>
+{% endblock %}

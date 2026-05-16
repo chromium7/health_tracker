@@ -1,0 +1,72 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+    &rsaquo; {{ title }}
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <p>
+        Upload a UTF-8 CSV to backfill existing records onto the selected patient.
+        Each row is one record. The <code>activity_type</code> column controls
+        which fields are required on that row.
+    </p>
+
+    <h2>{% translate 'CSV columns' %}</h2>
+    <p><code>{% for column in csv_columns %}{{ column }}{% if not forloop.last %}, {% endif %}{% endfor %}</code></p>
+
+    <h2>{% translate 'Activity types' %}</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>{% translate 'activity_type' %}</th>
+                <th>{% translate 'Description' %}</th>
+                <th>{% translate 'Required columns' %}</th>
+                <th>{% translate 'Optional columns' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><th><code>bp</code></th><td>Blood Pressure</td><td><code>created_at, systolic, diastolic</code></td><td><code>heart_rate, notes</code></td></tr>
+            <tr><th><code>hr</code></th><td>Heart Rate</td><td><code>created_at, heart_rate</code></td><td><code>notes</code></td></tr>
+            <tr><th><code>wt</code></th><td>Weight (kg)</td><td><code>created_at, weight_kg</code></td><td><code>notes</code></td></tr>
+            <tr><th><code>os</code></th><td>Oxygen Saturation (%)</td><td><code>created_at, spo2</code></td><td><code>notes</code></td></tr>
+            <tr><th><code>water</code></th><td>Water Intake (ml)</td><td><code>created_at, volume_ml</code></td><td>&mdash;</td></tr>
+            <tr><th><code>medication</code></th><td>Medication Taken</td><td><code>created_at, medication_id</code></td><td>&mdash;</td></tr>
+        </tbody>
+    </table>
+
+    {% if row_errors %}
+    <div class="errornote">
+        <p><strong>{% blocktranslate count count=row_errors|length %}{{ count }} row failed validation. Nothing was imported.{% plural %}{{ count }} rows failed validation. Nothing was imported.{% endblocktranslate %}</strong></p>
+        <ul>
+            {% for error in row_errors %}
+            <li>Line {{ error.line }}: {{ error.message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        <fieldset class="module aligned">
+            {% for field in form %}
+            <div class="form-row{% if field.errors %} errors{% endif %}">
+                {{ field.errors }}
+                <div>
+                    <label for="{{ field.id_for_label }}"{% if field.field.required %} class="required"{% endif %}>{{ field.label }}:</label>
+                    {{ field }}
+                    {% if field.help_text %}<div class="help">{{ field.help_text }}</div>{% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </fieldset>
+        <div class="submit-row">
+            <input type="submit" value="{% translate 'Import' %}" class="default">
+        </div>
+    </form>
+</div>
+{% endblock %}

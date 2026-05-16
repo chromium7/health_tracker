@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Ubah Catatan Obat - HealthTracker{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <a class="page-header__back" href="{% url 'medication_log_detail' pk=log.pk %}" aria-label="Kembali">
+      {% include "_icons.html" with icon="back" size=18 %}
+    </a>
+    <div class="page-header__titles">
+      <p class="page-header__eyebrow">{{ log.medication.name }}</p>
+      <h1 class="page-header__title">Ubah Catatan Obat</h1>
+    </div>
+  </header>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="field">
+        {% for error in form.non_field_errors %}
+          <p class="field__error">{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="field">
+      <label class="field__label" for="{{ form.timestamp.id_for_label }}">Waktu Diminum</label>
+      <input class="field__input-control field__input-control--note"
+             type="datetime-local"
+             name="{{ form.timestamp.name }}"
+             id="{{ form.timestamp.id_for_label }}"
+             value="{{ form.timestamp.value|default_if_none:'' }}"
+             required>
+      {% for error in form.timestamp.errors %}
+        <p class="field__error">{{ error }}</p>
+      {% endfor %}
+    </div>
+
+    <button class="button button--primary" type="submit">
+      {% include "_icons.html" with icon="check" size=18 %}
+      <span>Simpan Perubahan</span>
+    </button>
+  </form>
+{% endblock %}

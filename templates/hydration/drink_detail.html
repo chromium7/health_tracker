@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Catatan Minum - HealthTracker{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <a class="page-header__back" href="{% url 'activity_list' %}" aria-label="Kembali">
+      {% include "_icons.html" with icon="back" size=18 %}
+    </a>
+    <div class="page-header__titles">
+      <p class="page-header__eyebrow">Konsumsi Air</p>
+      <h1 class="page-header__title">Catatan Minum</h1>
+    </div>
+  </header>
+
+  <dl class="detail-list">
+    <div class="detail-list__row">
+      <dt class="detail-list__term">Volume</dt>
+      <dd class="detail-list__value">{{ drink.volume_ml }} ml</dd>
+    </div>
+    <div class="detail-list__row">
+      <dt class="detail-list__term">Pasien</dt>
+      <dd class="detail-list__value">{{ drink.patient.get_full_name|default:drink.patient.username }}</dd>
+    </div>
+    <div class="detail-list__row">
+      <dt class="detail-list__term">Waktu</dt>
+      <dd class="detail-list__value">{{ drink.created_at|date:"l, j F Y, H.i" }}</dd>
+    </div>
+  </dl>
+
+  <div class="detail-actions">
+    <a class="button button--primary" href="{% url 'drink_edit' pk=drink.pk %}">Ubah</a>
+    <a class="button button--danger" href="{% url 'drink_delete' pk=drink.pk %}">Hapus</a>
+  </div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% comment %}
+Renders one of the large numeric input fields used by the metric
+logging form. Required context:
+  field   - the bound form field
+  eyebrow - the field title (e.g. "High Number")
+  suffix  - small subtitle text in parens (e.g. "(SYS)")
+  unit    - unit string rendered to the right of the value
+{% endcomment %}
+<div class="field">
+  <label class="field__label" for="{{ field.id_for_label }}">
+    {{ eyebrow }}{% if suffix %} <span class="field__label-suffix">{{ suffix }}</span>{% endif %}
+  </label>
+  <div class="field__input">
+    <input class="field__input-control"
+           type="number"
+           inputmode="decimal"
+           name="{{ field.name }}"
+           id="{{ field.id_for_label }}"
+           value="{{ field.value|default_if_none:'' }}"
+           required>
+    <span class="field__unit">{{ unit }}</span>
+  </div>
+  {% for error in field.errors %}
+    <p class="field__error">{{ error }}</p>
+  {% endfor %}
+</div>

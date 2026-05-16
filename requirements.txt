@@ -7,6 +7,9 @@ django-redis==6.0.0
 psycopg==3.3.3
 
 Pillow==12.1.1
+
+# python-magic upgrade path for document uploads in production:
+# python-magic==0.4.27
 # S3 storage
 paramiko==3.5.0
 boto3==1.36.7

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} - HealthTracker{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <a class="page-header__back" href="{% url 'dashboard' %}" aria-label="Kembali">
+      {% include "_icons.html" with icon="back" size=18 %}
+    </a>
+    <div class="page-header__titles">
+      <p class="page-header__eyebrow">{{ metric_label }}</p>
+      <h1 class="page-header__title">Catatan Baru</h1>
+    </div>
+    <a class="page-header__action" href="{% url 'activity_list' %}?activity_type=metric:{{ metric_type }}" aria-label="Riwayat">
+      {% include "_icons.html" with icon="clock" size=20 %}
+    </a>
+  </header>
+
+  <span class="timestamp-pill">
+    {% include "_icons.html" with icon="clock" size=14 %}
+    Hari Ini &middot; {{ now|date:"H.i" }}
+  </span>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="field">
+        {% for error in form.non_field_errors %}
+          <p class="field__error">{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if metric_type == "bp" %}
+      {% include "metrics/_field.html" with field=form.systolic eyebrow="Sistolik" suffix="(SYS)" unit="mmHg" %}
+      {% include "metrics/_field.html" with field=form.diastolic eyebrow="Diastolik" suffix="(DIA)" unit="mmHg" %}
+      {% include "metrics/_field.html" with field=form.heart_rate eyebrow="Detak Jantung" suffix="(BPM)" unit="denyut/menit" %}
+    {% elif metric_type == "hr" %}
+      {% include "metrics/_field.html" with field=form.value eyebrow="Detak Jantung" suffix="(BPM)" unit="denyut/menit" %}
+    {% elif metric_type == "wt" %}
+      {% include "metrics/_field.html" with field=form.value eyebrow="Berat Badan" suffix="" unit="kg" %}
+    {% elif metric_type == "os" %}
+      {% include "metrics/_field.html" with field=form.value eyebrow="Saturasi Oksigen" suffix="(SpO2)" unit="%" %}
+    {% endif %}
+
+    <div class="field">
+      <label class="field__label" for="{{ form.notes.id_for_label }}">
+        Catatan <span class="field__label-suffix">(opsional)</span>
+      </label>
+      <textarea class="field__input-control field__input-control--note"
+                name="{{ form.notes.name }}"
+                id="{{ form.notes.id_for_label }}"
+                placeholder="Tulis catatan tambahan&hellip;">{{ form.notes.value|default_if_none:'' }}</textarea>
+      {% for error in form.notes.errors %}
+        <p class="field__error">{{ error }}</p>
+      {% endfor %}
+    </div>
+
+    <button class="button button--primary" type="submit">
+      {% include "_icons.html" with icon="check" size=18 %}
+      <span>Simpan Catatan</span>
+    </button>
+  </form>
+{% endblock %}

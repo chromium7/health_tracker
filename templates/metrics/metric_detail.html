@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}{{ metric_label }} - HealthTracker{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <a class="page-header__back" href="{% url 'activity_list' %}" aria-label="Kembali">
+      {% include "_icons.html" with icon="back" size=18 %}
+    </a>
+    <div class="page-header__titles">
+      <p class="page-header__eyebrow">Catatan</p>
+      <h1 class="page-header__title">{{ metric_label }}</h1>
+    </div>
+  </header>
+
+  <dl class="detail-list">
+    <div class="detail-list__row">
+      <dt class="detail-list__term">Nilai</dt>
+      <dd class="detail-list__value">{{ metric.display_value }}</dd>
+    </div>
+    <div class="detail-list__row">
+      <dt class="detail-list__term">Pasien</dt>
+      <dd class="detail-list__value">{{ metric.patient.get_full_name|default:metric.patient.username }}</dd>
+    </div>
+    <div class="detail-list__row">
+      <dt class="detail-list__term">Waktu</dt>
+      <dd class="detail-list__value">{{ metric.created_at|date:"l, j F Y, H.i" }}</dd>
+    </div>
+    {% if metric.notes %}
+      <div class="detail-list__row">
+        <dt class="detail-list__term">Catatan</dt>
+        <dd class="detail-list__value">{{ metric.notes }}</dd>
+      </div>
+    {% endif %}
+  </dl>
+
+  <div class="detail-actions">
+    <a class="button button--primary" href="{% url 'metric_edit' pk=metric.pk %}">Ubah</a>
+    <a class="button button--danger" href="{% url 'metric_delete' pk=metric.pk %}">Hapus</a>
+  </div>
+{% endblock %}

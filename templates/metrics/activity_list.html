@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Aktivitas Terbaru - HealthTracker{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <a class="page-header__back" href="{% url 'dashboard' %}" aria-label="Kembali">
+      {% include "_icons.html" with icon="back" size=18 %}
+    </a>
+    <div class="page-header__titles">
+      <p class="page-header__eyebrow">{{ patient_name }}</p>
+      <h1 class="page-header__title">Aktivitas Terbaru</h1>
+    </div>
+  </header>
+
+  {% include "_history_filter.html" with form=form filter_summary=filter_summary type_choices=type_choices %}
+
+  {% if page.object_list %}
+    <ul class="history-list">
+      {% regroup page.object_list by timestamp|date:"Y-m-d" as day_groups %}
+      {% for day in day_groups %}
+        <li class="history-day">
+          <h3 class="history-day__title">{{ day.list.0.timestamp|date:"l, j F" }}</h3>
+          <ul class="history-rows">
+            {% for activity in day.list %}
+              <li>
+                <a class="history-row" href="{{ activity.detail_url }}">
+                  <span class="history-row__icon history-row__icon--{{ activity.icon_modifier }}">
+                    {% include "_icons.html" with icon=activity.icon size=16 %}
+                  </span>
+                  <span class="history-row__body">
+                    <span class="history-row__type">{{ activity.label }}</span>
+                    <span class="history-row__value">{{ activity.value_display }}</span>
+                    <span class="history-row__patient">{{ activity.patient_name }}</span>
+                  </span>
+                  <span class="history-row__time">{{ activity.timestamp|date:"H.i" }}</span>
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="recent-empty">Tidak ada aktivitas di rentang ini.</p>
+  {% endif %}
+
+  {% include "_pagination.html" with page=page %}
+{% endblock %}

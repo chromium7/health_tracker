@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Dokumen - HealthTracker{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <div class="page-header__titles">
+      <p class="page-header__eyebrow">{{ documents|length }} berkas</p>
+      <h1 class="page-header__title">Dokumen Kesehatan Saya</h1>
+    </div>
+  </header>
+
+  <a class="upload-card" href="{% url 'document_upload' %}">
+    {% include "_icons.html" with icon="upload" size=18 %}
+    <span>Unggah Dokumen Baru</span>
+  </a>
+
+  <section class="section">
+    <div class="section__header">
+      <h2 class="section__title">Terbaru</h2>
+    </div>
+
+    {% if documents %}
+      <ul class="doc-list">
+        {% for document in documents %}
+          <li>
+            <a class="doc-row" href="{{ document.file.url }}">
+              {% with ext=document.file.name|lower %}
+                <span class="doc-row__icon {% if ext|slice:'-3:' == 'pdf' %}doc-row__icon--pdf{% else %}doc-row__icon--img{% endif %}">
+                  {% if ext|slice:"-3:" == "pdf" %}
+                    {% include "_icons.html" with icon="doc" size=18 %}
+                  {% else %}
+                    {% include "_icons.html" with icon="doc" size=18 %}
+                  {% endif %}
+                </span>
+              {% endwith %}
+              <span class="doc-row__body">
+                <span class="doc-row__title">{{ document.title }}</span>
+                <span class="doc-row__date">{{ document.uploaded_at|date:"j M Y" }}</span>
+              </span>
+              <span class="doc-row__chevron">
+                {% include "_icons.html" with icon="chevron-right" size=18 %}
+              </span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="doc-empty">Belum ada dokumen yang diunggah.</p>
+    {% endif %}
+  </section>
+{% endblock %}

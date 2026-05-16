@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Ubah Catatan Minum - HealthTracker{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <a class="page-header__back" href="{% url 'drink_detail' pk=drink.pk %}" aria-label="Kembali">
+      {% include "_icons.html" with icon="back" size=18 %}
+    </a>
+    <div class="page-header__titles">
+      <p class="page-header__eyebrow">Konsumsi Air</p>
+      <h1 class="page-header__title">Ubah Catatan Minum</h1>
+    </div>
+  </header>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="field">
+        {% for error in form.non_field_errors %}
+          <p class="field__error">{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="field">
+      <label class="field__label" for="{{ form.timestamp.id_for_label }}">Waktu</label>
+      <input class="field__input-control field__input-control--note"
+             type="datetime-local"
+             name="{{ form.timestamp.name }}"
+             id="{{ form.timestamp.id_for_label }}"
+             value="{{ form.timestamp.value|default_if_none:'' }}"
+             required>
+      {% for error in form.timestamp.errors %}
+        <p class="field__error">{{ error }}</p>
+      {% endfor %}
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="{{ form.volume_ml.id_for_label }}">
+        Volume <span class="field__label-suffix">(ml)</span>
+      </label>
+      <div class="field__input">
+        <input class="field__input-control"
+               type="number"
+               inputmode="numeric"
+               name="{{ form.volume_ml.name }}"
+               id="{{ form.volume_ml.id_for_label }}"
+               value="{{ form.volume_ml.value|default_if_none:'' }}"
+               min="1"
+               max="2000"
+               required>
+        <span class="field__unit">ml</span>
+      </div>
+      {% for error in form.volume_ml.errors %}
+        <p class="field__error">{{ error }}</p>
+      {% endfor %}
+    </div>
+
+    <button class="button button--primary" type="submit">
+      {% include "_icons.html" with icon="check" size=18 %}
+      <span>Simpan Perubahan</span>
+    </button>
+  </form>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Catatan Hari Ini - HealthTracker{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <div class="page-header__titles">
+      <p class="page-header__eyebrow">{{ today|date:"l, j F" }}</p>
+      <h1 class="page-header__title">Catatan Hari Ini</h1>
+    </div>
+    <button class="page-header__action" type="button" aria-label="Notifikasi">
+      {% include "_icons.html" with icon="bell" size=20 %}
+    </button>
+  </header>
+
+  <section class="greeting">
+    <span class="greeting__icon">
+      {% include "_icons.html" with icon="calendar" size=22 %}
+    </span>
+    <div class="greeting__text">
+      <span class="greeting__line">Halo, {{ patient_first_name }}</span>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section__header">
+      <h2 class="section__title">Catat Pengukuran</h2>
+    </div>
+    <div class="quick-grid">
+      <a class="quick-card" href="{% url 'log_metric' 'bp' %}">
+        <span class="quick-card__icon quick-card__icon--bp">
+          {% include "_icons.html" with icon="heart" size=20 %}
+        </span>
+        <span class="quick-card__title">Tekanan Darah</span>
+        <span class="quick-card__caption">
+          {% if latest_bp %}{{ latest_bp.display_value }}{% else %}Belum ada catatan{% endif %}
+        </span>
+      </a>
+
+      <a class="quick-card" href="{% url 'medication_list' %}">
+        <span class="quick-card__icon quick-card__icon--meds">
+          {% include "_icons.html" with icon="pill" size=20 %}
+        </span>
+        <span class="quick-card__title">Obat</span>
+        <span class="quick-card__caption">
+          {{ medication_progress.taken }} dari {{ medication_progress.total }} diminum hari ini
+        </span>
+      </a>
+
+      <a class="quick-card" href="{% url 'water' %}">
+        <span class="quick-card__icon quick-card__icon--water">
+          {% include "_icons.html" with icon="drop" size=20 %}
+        </span>
+        <span class="quick-card__title">Air</span>
+        <span class="quick-card__caption">{{ total_ml }} dari {{ daily_target_ml }} ml</span>
+      </a>
+
+      <a class="quick-card" href="{% url 'log_metric' 'wt' %}">
+        <span class="quick-card__icon quick-card__icon--weight">
+          {% include "_icons.html" with icon="user" size=20 %}
+        </span>
+        <span class="quick-card__title">Berat Badan</span>
+        <span class="quick-card__caption">
+          {% if latest_weight %}Terakhir: {{ latest_weight.display_value }}{% else %}Belum ada catatan{% endif %}
+        </span>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section__header">
+      <h2 class="section__title">Aktivitas Terbaru</h2>
+      {% if recent_activities %}
+        <a class="section__link" href="{% url 'activity_list' %}">Lihat semua</a>
+      {% endif %}
+    </div>
+
+    {% if recent_activities %}
+      <ul class="recent-list">
+        {% for activity in recent_activities %}
+          <li>
+            <a class="recent-row" href="{{ activity.detail_url }}">
+              <span class="recent-row__icon recent-row__icon--{{ activity.icon_modifier }}">
+                {% include "_icons.html" with icon=activity.icon size=16 %}
+              </span>
+              <div class="recent-row__body">
+                <div class="recent-row__head">
+                  <span class="recent-row__type">{{ activity.label }}</span>
+                  <span class="recent-row__time">{{ activity.timestamp|date:"j M, H.i" }}</span>
+                </div>
+                <span class="recent-row__value">{{ activity.value_display }}</span>
+                <span class="recent-row__patient">{{ activity.patient_name }}</span>
+              </div>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="recent-empty">Belum ada catatan. Ketuk kartu di atas untuk mencatat aktivitas pertama.</p>
+    {% endif %}
+  </section>
+{% endblock %}

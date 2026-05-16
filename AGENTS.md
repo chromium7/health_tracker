@@ -1,6 +1,6 @@
 # Agent Guidelines for Code Quality
 
-This document provides guidelines for maintaining high-quality code across Python, JavaScript, and SCSS. These rules MUST be followed by all AI coding agents and contributors.
+This document provides guidelines for maintaining high-quality code across Python, JavaScript, and CSS. These rules MUST be followed by all AI coding agents and contributors.
 
 ---
 
@@ -125,9 +125,21 @@ When a feature needs both a list view and a custom multi-step add page (e.g., "A
 
 ---
 
-## CSS / SCSS: BEM Convention
+## Frontend: Mobile-only PWA
 
-This project uses **BEM (Block, Element, Modifier)** for all CSS class naming. **Do not use utility-first frameworks (Tailwind, etc.) or ad-hoc class names** — every class must fit the BEM grammar so styles remain greppable and ownership stays clear.
+This product targets a single form factor: a smartphone browser, with installation as a Progressive Web App (PWA). Treat every screen as a portrait phone view.
+
+- **MUST** design and style for a 320 - 430 px viewport. There are no desktop, tablet, or wide-screen layouts. Do not add media queries for larger breakpoints.
+- **MUST** keep the bottom navigation visible on every authenticated screen and use the same five-slot pattern: Today, Meds, Log (centre FAB), Water, Docs.
+- **MUST** render the manifest at `/manifest.webmanifest` and the service worker at `/sw.js`. Both are served by `TemplateView` from project `urls.py`; the registration tag and `<link rel="manifest">` live in `base.html`.
+- **MUST** keep `<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">` and the `theme-color` / `apple-mobile-web-app-*` meta tags in `base.html` intact. They are required for PWA installability.
+- **MUST** ship icons at `static_files/icons/icon-192.png` and `icon-512.png`. Both paths are referenced from the manifest.
+- Touch targets are at least 44 x 44 px. Forms use large, readable inputs.
+- Service-worker caching strategy is network-first with a small offline shell. Do not add caching for authenticated responses without considering session leakage.
+
+## CSS: BEM Convention
+
+This project uses **BEM (Block, Element, Modifier)** for all CSS class naming, in **plain CSS only**. **Do not use SCSS, Sass, LESS, or utility-first frameworks (Tailwind, etc.)** and avoid ad-hoc class names — every class must fit the BEM grammar so styles remain greppable and ownership stays clear.
 
 ### Naming grammar
 
@@ -143,32 +155,32 @@ This project uses **BEM (Block, Element, Modifier)** for all CSS class naming. *
 - **MUST NOT** use modifiers as standalone classes (`<div class="--primary">`); always pair with the block/element they modify (`<div class="button button--primary">`).
 - **MUST NOT** style by tag or id (`div.card`, `#sidebar`). Style by class only — this keeps specificity flat (0,1,0) across the codebase.
 - **MUST NOT** use `!important` to override BEM rules. If you need an override, introduce a modifier.
-- Prefer one block per SCSS file, named after the block (`_card.scss` → `.card`). Co-locate elements and modifiers with the block.
+- **MUST NOT** write nested or descendant selectors (`.card .title`, `.card > .card__title`). Each rule targets exactly one BEM class so specificity stays at 0,1,0.
 
 ### Modifier vs. new block
 
 If a variant only changes appearance/state of an existing component, it's a modifier (`.card--compact`). If it introduces new structure or semantically different elements, it's a new block. Keep modifiers cosmetic; promote to a new block when responsibilities diverge.
 
-### SCSS structure
+### CSS structure
 
-- **MUST** nest elements and modifiers under the block using the `&` parent selector — but never nest beyond two levels deep. The resulting compiled selector must remain a single class (specificity 0,1,0).
+- **MUST** write a separate rule per BEM class (block, each element, each modifier). Example:
 
-  ```scss
+  ```css
   .card {
     padding: 1rem;
+  }
 
-    &__title {
-      font-weight: 600;
-    }
+  .card__title {
+    font-weight: 600;
+  }
 
-    &--featured {
-      border: 2px solid gold;
-    }
+  .card--featured {
+    border: 2px solid gold;
   }
   ```
 
-- **MUST NOT** nest descendant selectors (`.card .title`) — this leaks specificity. Always promote to a BEM element class.
-- Variables, mixins, and functions live in dedicated files (`_variables.scss`, `_mixins.scss`) and are `@use`d, not duplicated per-block.
+- **MUST** define shared design tokens (colours, spacing, typography) as CSS custom properties on `:root` in a single tokens file, and reference them with `var(--token)` from each rule. Never hard-code the same colour or spacing value in multiple places.
+- Group rules for one block contiguously inside the stylesheet so block code is easy to locate.
 
 ### JavaScript hooks
 

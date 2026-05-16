@@ -1,0 +1,18 @@
+{% extends "admin/index.html" %}
+{% load i18n %}
+
+{% block content %}
+{{ block.super }}
+<div class="module" id="data-tools-module">
+    <table>
+        <caption>
+            <a href="{% url 'data_import' %}" class="section" title="{% translate 'Import data from CSV' %}">{% translate 'Data Tools' %}</a>
+        </caption>
+        <tr>
+            <th scope="row"><a href="{% url 'data_import' %}">{% translate 'Import data from CSV' %}</a></th>
+            <td>&nbsp;</td>
+            <td><a href="{% url 'data_import' %}" class="addlink">{% translate 'Open' %}</a></td>
+        </tr>
+    </table>
+</div>
+{% endblock %}

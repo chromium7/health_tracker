@@ -1,0 +1,59 @@
+{% comment %}
+Renders the activity-history filter form.
+Required context:
+  form            - a Form with activity_type, start_date, end_date fields
+  filter_summary  - short description of the active filter
+  type_choices    - iterable of (value, label) tuples for the type select
+{% endcomment %}
+<form class="filter-form" method="get">
+  <details class="filter-form__details"{% if form.activity_type.value or form.start_date.value or form.end_date.value or form.non_field_errors %} open{% endif %}>
+    <summary class="filter-form__summary">
+      <span class="filter-form__summary-text">
+        <span class="filter-form__summary-label">Menampilkan</span>
+        <span class="filter-form__summary-value">{{ filter_summary }}</span>
+      </span>
+      <span class="filter-form__summary-chevron" aria-hidden="true"></span>
+    </summary>
+
+    <div class="filter-form__body">
+      {% if type_choices %}
+        <label class="filter-form__field">
+          <span class="filter-form__label">Jenis</span>
+          <select class="filter-form__input" name="{{ form.activity_type.name }}">
+            {% for value, label in type_choices %}
+              <option value="{{ value }}"{% if form.activity_type.value == value %} selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </label>
+      {% endif %}
+
+      <div class="filter-form__fields">
+        <label class="filter-form__field">
+          <span class="filter-form__label">Dari</span>
+          <input class="filter-form__input"
+                 type="date"
+                 name="{{ form.start_date.name }}"
+                 value="{{ form.start_date.value|default_if_none:'' }}">
+        </label>
+        <label class="filter-form__field">
+          <span class="filter-form__label">Sampai</span>
+          <input class="filter-form__input"
+                 type="date"
+                 name="{{ form.end_date.name }}"
+                 value="{{ form.end_date.value|default_if_none:'' }}">
+        </label>
+      </div>
+
+      {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+          <p class="field__error">{{ error }}</p>
+        {% endfor %}
+      {% endif %}
+
+      <div class="filter-form__actions">
+        <button class="button button--primary" type="submit">Terapkan</button>
+        <a class="button button--ghost" href="{{ request.path }}">Reset</a>
+      </div>
+    </div>
+  </details>
+</form>

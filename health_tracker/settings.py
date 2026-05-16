@@ -30,6 +30,12 @@ INSTALLED_APPS = [
     'rest_framework',
 
     # Local apps
+    'health_tracker.apps.users',
+    'health_tracker.apps.metrics',
+    'health_tracker.apps.medications',
+    'health_tracker.apps.hydration',
+    'health_tracker.apps.documents',
+    'health_tracker.apps.data_imports',
 ]
 
 MIDDLEWARE = [
@@ -47,7 +53,7 @@ ROOT_URLCONF = 'health_tracker.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -100,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'id'
 
 TIME_ZONE = 'Asia/Jakarta'
 
@@ -112,8 +118,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "/static/"
 STATIC_ROOT = SETTINGS_DIR / 'static'
+STATICFILES_DIRS = [BASE_DIR / 'static_files']
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = SETTINGS_DIR / 'media'
@@ -124,7 +131,25 @@ MEDIA_ROOT = SETTINGS_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom user model
-# AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'users.User'
+
+AUTHENTICATION_BACKENDS = [
+    'health_tracker.apps.users.backends.PINAuthBackend',
+]
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'
+
+# Session and CSRF cookie hardening.
+# SESSION_COOKIE_SECURE / CSRF_COOKIE_SECURE require HTTPS in production;
+# they are toggled off automatically below when DEBUG is True so local
+# development over HTTP continues to work.
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # Redis
 REDIS_PASSWORD = ""
@@ -173,3 +198,7 @@ if DEBUG:
     INSTALLED_APPS.append('debug_toolbar')
     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
     INTERNAL_IPS = ['127.0.0.1']
+
+    # Allow non-HTTPS cookies for local development.
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Hapus Catatan Obat - HealthTracker{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <a class="page-header__back" href="{% url 'medication_log_detail' pk=log.pk %}" aria-label="Kembali">
+      {% include "_icons.html" with icon="back" size=18 %}
+    </a>
+    <div class="page-header__titles">
+      <p class="page-header__eyebrow">{{ log.medication.name }}</p>
+      <h1 class="page-header__title">Hapus Catatan Obat</h1>
+    </div>
+  </header>
+
+  <section class="confirm">
+    <p class="confirm__lead">Yakin ingin menghapus catatan obat ini?</p>
+    <dl class="detail-list">
+      <div class="detail-list__row">
+        <dt class="detail-list__term">Obat</dt>
+        <dd class="detail-list__value">{{ log.medication.name }}</dd>
+      </div>
+      <div class="detail-list__row">
+        <dt class="detail-list__term">Waktu</dt>
+        <dd class="detail-list__value">{{ log.taken_at|date:"l, j F Y, H.i" }}</dd>
+      </div>
+    </dl>
+    <p class="confirm__warning">Tindakan ini tidak dapat dibatalkan.</p>
+  </section>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="detail-actions">
+      <a class="button button--ghost" href="{% url 'medication_log_detail' pk=log.pk %}">Batal</a>
+      <button class="button button--danger" type="submit">Hapus</button>
+    </div>
+  </form>
+{% endblock %}

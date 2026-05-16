@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Obat - HealthTracker{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <div class="page-header__titles">
+      <p class="page-header__eyebrow">{% now "l, j F"|upper %}</p>
+      <h1 class="page-header__title">Obat Hari Ini</h1>
+    </div>
+  </header>
+
+  <section class="progress-card" aria-label="Progres minum obat">
+    <span class="progress-card__ring"
+          style="--pct: {% if progress.total %}{% widthratio progress.taken progress.total 100 %}{% else %}0{% endif %};">
+      <span class="progress-card__ring-label">{{ progress.taken }}/{{ progress.total }}</span>
+    </span>
+    <div class="progress-card__body">
+      <p class="progress-card__title">
+        {% if progress.remaining %}
+          {{ progress.remaining }} obat belum diminum
+        {% else %}
+          Semua sudah diminum
+        {% endif %}
+      </p>
+      <p class="progress-card__caption">
+        {% if progress.total %}
+          {{ progress.taken }} dari {{ progress.total }} dosis tercatat
+        {% else %}
+          Tidak ada obat aktif
+        {% endif %}
+      </p>
+    </div>
+  </section>
+
+  {% if cards %}
+    <ul class="med-list">
+      {% for card in cards %}
+        <li class="med-card">
+          <div class="med-card__row">
+            <span class="med-card__icon">
+              {% include "_icons.html" with icon="pill" size=18 %}
+            </span>
+            <div class="med-card__body">
+              <p class="med-card__name">{{ card.medication.name }}</p>
+              <p class="med-card__meta">
+                {{ card.medication.dosage|default:"&mdash;" }}
+                {% if card.medication.reason %}&middot; {{ card.medication.reason }}{% endif %}
+              </p>
+            </div>
+          </div>
+          {% if card.taken %}
+            <button class="button button--taken" type="button" disabled>
+              {% include "_icons.html" with icon="check" size=16 %}
+              <span>Diminum pukul {{ card.taken_at|date:"H.i" }}</span>
+            </button>
+          {% else %}
+            <form class="med-card__form" method="post" action="{% url 'log_medication_taken' %}">
+              {% csrf_token %}
+              <input type="hidden" name="medication_id" value="{{ card.medication.pk }}">
+              <button class="button button--ghost" type="submit">Catat Sudah Diminum</button>
+            </form>
+          {% endif %}
+          <a class="med-card__stop" href="{% url 'medication_stop' pk=card.medication.pk %}">Hentikan obat</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="med-list__empty">Tidak ada obat aktif.</p>
+  {% endif %}
+
+  {% if stopped_medications %}
+    <details class="stopped-meds">
+      <summary class="stopped-meds__summary">
+        <span>Obat yang dihentikan</span>
+        <span class="stopped-meds__count">{{ stopped_medications|length }}</span>
+      </summary>
+      <ul class="stopped-meds__list">
+        {% for med in stopped_medications %}
+          <li class="stopped-meds__item">
+            <div class="stopped-meds__body">
+              <p class="stopped-meds__name">{{ med.name }}</p>
+              <p class="stopped-meds__meta">
+                {{ med.get_stop_reason_display|default:"Dihentikan" }}
+                {% if med.stopped_at %}&middot; {{ med.stopped_at|date:"j M Y" }}{% endif %}
+              </p>
+            </div>
+            <form method="post" action="{% url 'medication_restart' pk=med.pk %}">
+              {% csrf_token %}
+              <button class="button button--ghost" type="submit">Aktifkan kembali</button>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+    </details>
+  {% endif %}
+{% endblock %}

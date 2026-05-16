@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Konsumsi Air - HealthTracker{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <a class="page-header__back" href="{% url 'dashboard' %}" aria-label="Kembali">
+      {% include "_icons.html" with icon="back" size=18 %}
+    </a>
+    <div class="page-header__titles">
+      <p class="page-header__eyebrow">Hari Ini</p>
+      <h1 class="page-header__title">Catat Konsumsi Air</h1>
+    </div>
+    <a class="page-header__action page-header__action--text" href="{% url 'activity_list' %}?activity_type=water" aria-label="Riwayat">
+      {% include "_icons.html" with icon="clock" size=20 %}
+    </a>
+  </header>
+
+  <section class="total-card" aria-label="Total konsumsi hari ini">
+    <p class="total-card__label">Total hari ini</p>
+    <p class="total-card__value">
+      <span class="total-card__value-number">{{ total_ml }}</span>
+      <span class="total-card__value-unit">ml</span>
+      <span class="total-card__value-target">dari {{ daily_target_ml }} ml</span>
+    </p>
+    <div class="progress-bar">
+      <span class="progress-bar__fill" style="width: {{ progress_pct }}%;"></span>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section__header">
+      <h2 class="section__title">Tambah Minum</h2>
+    </div>
+
+    <form class="drink-form" method="post" action="{% url 'log_water' %}" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{% url 'water' %}">
+
+      <label class="field__label" for="{{ form.volume_ml.id_for_label }}">
+        Volume <span class="field__label-suffix">(ml)</span>
+      </label>
+      <div class="drink-form__row">
+        <div class="drink-form__input">
+          <input class="field__input-control drink-form__number"
+                 type="number"
+                 inputmode="numeric"
+                 name="{{ form.volume_ml.name }}"
+                 id="{{ form.volume_ml.id_for_label }}"
+                 min="1"
+                 max="2000"
+                 placeholder="250"
+                 required>
+          <span class="field__unit">ml</span>
+        </div>
+        <button class="button button--primary drink-form__submit" type="submit">
+          {% include "_icons.html" with icon="plus" size=18 %}
+          <span>Tambah</span>
+        </button>
+      </div>
+      {% for error in form.volume_ml.errors %}
+        <p class="field__error">{{ error }}</p>
+      {% endfor %}
+    </form>
+  </section>
+
+  <section class="section">
+    <div class="section__header">
+      <h2 class="section__title">Minum Hari Ini</h2>
+      <a class="section__link" href="{% url 'activity_list' %}?activity_type=water">Lihat riwayat</a>
+    </div>
+    {% if drinks %}
+      <ul class="drink-log">
+        {% for drink in drinks %}
+          <li class="drink-log__row">
+            <a class="drink-log__link" href="{% url 'drink_detail' pk=drink.pk %}">
+              <span class="drink-log__icon">
+                {% include "_icons.html" with icon="drop" size=16 %}
+              </span>
+              <span class="drink-log__title">Minum</span>
+              <span class="drink-log__time">{{ drink.created_at|date:"H.i" }}</span>
+              <span class="drink-log__amount">{{ drink.volume_ml }} ml</span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="recent-empty">Belum ada catatan minum hari ini.</p>
+    {% endif %}
+  </section>
+{% endblock %}

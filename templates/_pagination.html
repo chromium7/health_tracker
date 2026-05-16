@@ -1,0 +1,36 @@
+{% comment %}
+Renders pagination controls for a Django Paginator Page.
+Required context:
+  page - the Paginator Page
+{% endcomment %}
+{% if page.paginator.num_pages > 1 %}
+  <nav class="pagination" aria-label="Paginasi">
+    {% if page.has_previous %}
+      <a class="pagination__link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&amp;{% endif %}{% endfor %}page={{ page.previous_page_number }}">
+        {% include "_icons.html" with icon="back" size=16 %}
+        <span>Sebelumnya</span>
+      </a>
+    {% else %}
+      <span class="pagination__link pagination__link--disabled">
+        {% include "_icons.html" with icon="back" size=16 %}
+        <span>Sebelumnya</span>
+      </span>
+    {% endif %}
+
+    <span class="pagination__status">
+      Halaman {{ page.number }} dari {{ page.paginator.num_pages }}
+    </span>
+
+    {% if page.has_next %}
+      <a class="pagination__link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&amp;{% endif %}{% endfor %}page={{ page.next_page_number }}">
+        <span>Berikutnya</span>
+        {% include "_icons.html" with icon="chevron-right" size=16 %}
+      </a>
+    {% else %}
+      <span class="pagination__link pagination__link--disabled">
+        <span>Berikutnya</span>
+        {% include "_icons.html" with icon="chevron-right" size=16 %}
+      </span>
+    {% endif %}
+  </nav>
+{% endif %}
