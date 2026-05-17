@@ -29,12 +29,15 @@
             {% include "_icons.html" with icon="pill" size=22 %}
             <span>Obat</span>
           </a>
-          <a class="bottom-nav__item bottom-nav__item--fab" href="{% url 'log_metric' 'bp' %}" aria-label="Catat pengukuran baru">
+          <button type="button"
+                  class="bottom-nav__item bottom-nav__item--fab"
+                  aria-label="Catat pengukuran baru"
+                  data-action-sheet-open>
             <span class="bottom-nav__fab">
               {% include "_icons.html" with icon="plus" size=24 %}
             </span>
             <span>Catat</span>
-          </a>
+          </button>
           <a class="bottom-nav__item{% if active == 'water' %} bottom-nav__item--active{% endif %}" href="{% url 'water' %}">
             {% include "_icons.html" with icon="drop" size=22 %}
             <span>Air</span>
@@ -44,6 +47,37 @@
             <span>Dokumen</span>
           </a>
         </nav>
+
+        <dialog class="action-sheet" data-action-sheet aria-label="Pilih jenis catatan">
+          <form method="dialog" class="action-sheet__panel">
+            <p class="action-sheet__title">Catat Apa?</p>
+            <a class="action-sheet__option action-sheet__option--bp" href="{% url 'log_metric' 'bp' %}">
+              <span class="action-sheet__icon">
+                {% include "_icons.html" with icon="heart" size=20 %}
+              </span>
+              <span class="action-sheet__label">Tekanan Darah</span>
+            </a>
+            <a class="action-sheet__option action-sheet__option--weight" href="{% url 'log_metric' 'wt' %}">
+              <span class="action-sheet__icon">
+                {% include "_icons.html" with icon="user" size=20 %}
+              </span>
+              <span class="action-sheet__label">Berat Badan</span>
+            </a>
+            <a class="action-sheet__option action-sheet__option--water" href="{% url 'log_water' %}">
+              <span class="action-sheet__icon">
+                {% include "_icons.html" with icon="drop" size=20 %}
+              </span>
+              <span class="action-sheet__label">Konsumsi Air</span>
+            </a>
+            <a class="action-sheet__option action-sheet__option--meds" href="{% url 'medication_list' %}">
+              <span class="action-sheet__icon">
+                {% include "_icons.html" with icon="pill" size=20 %}
+              </span>
+              <span class="action-sheet__label">Obat</span>
+            </a>
+            <button type="submit" class="action-sheet__cancel" value="cancel">Batal</button>
+          </form>
+        </dialog>
       {% endwith %}
     {% endif %}
   </div>
@@ -54,6 +88,22 @@
         navigator.serviceWorker.register('/sw.js').catch(() => undefined);
       });
     }
+
+    (function () {
+      const sheet = document.querySelector('[data-action-sheet]');
+      const trigger = document.querySelector('[data-action-sheet-open]');
+      if (!sheet || !trigger) return;
+      trigger.addEventListener('click', () => {
+        if (typeof sheet.showModal === 'function') {
+          sheet.showModal();
+        } else {
+          sheet.setAttribute('open', '');
+        }
+      });
+      sheet.addEventListener('click', (event) => {
+        if (event.target === sheet) sheet.close();
+      });
+    })();
   </script>
 </body>
 </html>

@@ -24,9 +24,10 @@ class LogWaterViewTests(TestCase):
         )
         self.client.force_login(self.patient)
 
-    def test_get_redirects_to_root(self) -> None:
+    def test_get_renders_form(self) -> None:
         response = self.client.get(reverse("log_water"))
-        self.assertRedirects(response, "/", fetch_redirect_response=False)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "hydration/log_water_form.html")
         self.assertFalse(WaterIntakeLog.objects.exists())
 
     def test_post_with_custom_volume_creates_log(self) -> None:
@@ -38,6 +39,14 @@ class LogWaterViewTests(TestCase):
         log = WaterIntakeLog.objects.get()
         self.assertEqual(log.volume_ml, 320)
 
+    def test_post_with_notes_persists_notes(self) -> None:
+        self.client.post(
+            reverse("log_water"),
+            data={"volume_ml": 250, "notes": "  setelah olahraga  "},
+        )
+        log = WaterIntakeLog.objects.get()
+        self.assertEqual(log.notes, "setelah olahraga")
+
     def test_post_with_next_param_redirects_there(self) -> None:
         response = self.client.post(
             reverse("log_water"),
@@ -45,12 +54,13 @@ class LogWaterViewTests(TestCase):
         )
         self.assertRedirects(response, "/", fetch_redirect_response=False)
 
-    def test_post_above_max_is_rejected(self) -> None:
+    def test_post_above_max_rerenders_form(self) -> None:
         response = self.client.post(
             reverse("log_water"),
             data={"volume_ml": 5000},
         )
-        self.assertRedirects(response, reverse("water"), fetch_redirect_response=False)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "hydration/log_water_form.html")
         self.assertFalse(WaterIntakeLog.objects.exists())
 
     def test_post_with_zero_is_rejected(self) -> None:
@@ -60,12 +70,13 @@ class LogWaterViewTests(TestCase):
         )
         self.assertFalse(WaterIntakeLog.objects.exists())
 
-    def test_post_with_non_integer_silently_ignored(self) -> None:
+    def test_post_with_non_integer_rerenders_form(self) -> None:
         response = self.client.post(
             reverse("log_water"),
             data={"volume_ml": "abc"},
         )
-        self.assertRedirects(response, reverse("water"), fetch_redirect_response=False)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "hydration/log_water_form.html")
         self.assertFalse(WaterIntakeLog.objects.exists())
 
 

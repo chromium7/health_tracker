@@ -28,41 +28,10 @@
     </div>
   </section>
 
-  <section class="section">
-    <div class="section__header">
-      <h2 class="section__title">Tambah Minum</h2>
-    </div>
-
-    <form class="drink-form" method="post" action="{% url 'log_water' %}" novalidate>
-      {% csrf_token %}
-      <input type="hidden" name="next" value="{% url 'water' %}">
-
-      <label class="field__label" for="{{ form.volume_ml.id_for_label }}">
-        Volume <span class="field__label-suffix">(ml)</span>
-      </label>
-      <div class="drink-form__row">
-        <div class="drink-form__input">
-          <input class="field__input-control drink-form__number"
-                 type="number"
-                 inputmode="numeric"
-                 name="{{ form.volume_ml.name }}"
-                 id="{{ form.volume_ml.id_for_label }}"
-                 min="1"
-                 max="2000"
-                 placeholder="250"
-                 required>
-          <span class="field__unit">ml</span>
-        </div>
-        <button class="button button--primary drink-form__submit" type="submit">
-          {% include "_icons.html" with icon="plus" size=18 %}
-          <span>Tambah</span>
-        </button>
-      </div>
-      {% for error in form.volume_ml.errors %}
-        <p class="field__error">{{ error }}</p>
-      {% endfor %}
-    </form>
-  </section>
+  <a class="button button--primary" href="{% url 'log_water' %}">
+    {% include "_icons.html" with icon="plus" size=18 %}
+    <span>Catat Minum</span>
+  </a>
 
   <section class="section">
     <div class="section__header">

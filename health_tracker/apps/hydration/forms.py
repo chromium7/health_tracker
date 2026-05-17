@@ -24,6 +24,7 @@ class WaterEntryForm(forms.Form):
         max_value=MAX_VOLUME_ML,
         label="Volume (ml)",
     )
+    notes = forms.CharField(required=False, widget=forms.Textarea)
 
     def clean_volume_ml(self) -> int:
         """Return the cleaned positive volume.
@@ -33,12 +34,16 @@ class WaterEntryForm(forms.Form):
         """
         return int(self.cleaned_data["volume_ml"])
 
+    def clean_notes(self) -> str:
+        return (self.cleaned_data.get("notes") or "").strip()
+
 
 class WaterEntryEditForm(forms.Form):
-    """Edit an existing ``WaterIntakeLog``: volume and timestamp."""
+    """Edit an existing ``WaterIntakeLog``: volume, timestamp and notes."""
 
     timestamp = forms.DateTimeField(widget=forms.DateTimeInput(attrs={"type": "datetime-local"}))
     volume_ml = forms.IntegerField(min_value=MIN_VOLUME_ML, max_value=MAX_VOLUME_ML)
+    notes = forms.CharField(required=False, widget=forms.Textarea)
 
     @classmethod
     def initial_for(cls, log: WaterIntakeLog) -> dict:
@@ -46,12 +51,17 @@ class WaterEntryEditForm(forms.Form):
         return {
             "timestamp": timezone.localtime(log.created_at).strftime("%Y-%m-%dT%H:%M"),
             "volume_ml": log.volume_ml,
+            "notes": log.notes,
         }
+
+    def clean_notes(self) -> str:
+        return (self.cleaned_data.get("notes") or "").strip()
 
     def apply(self, log: WaterIntakeLog) -> WaterIntakeLog:
         """Persist the cleaned form data onto ``log``."""
         log.volume_ml = self.cleaned_data["volume_ml"]
         log.created_at = self.cleaned_data["timestamp"]
+        log.notes = self.cleaned_data["notes"]
         log.save()
         return log
 

@@ -26,6 +26,12 @@
       <dt class="detail-list__term">Waktu</dt>
       <dd class="detail-list__value">{{ drink.created_at|date:"l, j F Y, H.i" }}</dd>
     </div>
+    {% if drink.notes %}
+      <div class="detail-list__row">
+        <dt class="detail-list__term">Catatan</dt>
+        <dd class="detail-list__value detail-list__value--note">{{ drink.notes|linebreaksbr }}</dd>
+      </div>
+    {% endif %}
   </dl>
 
   <div class="detail-actions">

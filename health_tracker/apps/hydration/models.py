@@ -18,6 +18,7 @@ class WaterIntakeLog(models.Model):
 
     patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="water_logs")
     volume_ml = models.PositiveIntegerField()
+    notes = models.TextField(blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
