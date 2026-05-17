@@ -50,5 +50,9 @@ class UserAdmin(DjangoUserAdmin):
     list_filter = ["role", "is_active"]
     search_fields = ["username"]
 
-    fieldsets = DjangoUserAdmin.fieldsets + (("HealthTracker", {"fields": ("role", "pin", "patient_profile")}),)
-    add_fieldsets = DjangoUserAdmin.add_fieldsets + (("HealthTracker", {"fields": ("role", "pin", "patient_profile")}),)
+    fieldsets = DjangoUserAdmin.fieldsets + (
+        ("HealthTracker", {"fields": ("role", "pin", "patient_profile", "daily_water_target_ml")}),
+    )
+    add_fieldsets = DjangoUserAdmin.add_fieldsets + (
+        ("HealthTracker", {"fields": ("role", "pin", "patient_profile", "daily_water_target_ml")}),
+    )

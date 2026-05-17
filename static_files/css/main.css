@@ -1246,11 +1246,6 @@ button {
   color: var(--color-tint-water-fg);
 }
 
-.recent-row__patient {
-  color: var(--color-text-muted);
-  font-size: var(--font-size-xs);
-}
-
 .history-row__icon--bp,
 .history-row__icon--hr {
   background: var(--color-tint-bp);
@@ -1286,11 +1281,6 @@ button {
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-}
-
-.history-row__patient {
-  color: var(--color-text-muted);
-  font-size: var(--font-size-xs);
 }
 
 .drink-log__link {

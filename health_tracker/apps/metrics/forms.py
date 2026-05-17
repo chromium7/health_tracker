@@ -15,8 +15,8 @@ from health_tracker.apps.users.models import User
 class BloodPressureForm(forms.Form):
     """Capture systolic, diastolic, and heart rate plus optional notes."""
 
-    systolic = forms.IntegerField(min_value=50, max_value=300)
-    diastolic = forms.IntegerField(min_value=30, max_value=200)
+    systolic = forms.IntegerField(min_value=40, max_value=300)
+    diastolic = forms.IntegerField(min_value=20, max_value=200)
     heart_rate = forms.IntegerField(min_value=20, max_value=250)
     notes = forms.CharField(required=False, widget=forms.Textarea)
 

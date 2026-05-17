@@ -7,7 +7,7 @@ from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
-from health_tracker.apps.hydration.utils import DAILY_TARGET_ML, get_today_total_ml
+from health_tracker.apps.hydration.utils import get_today_total_ml
 from health_tracker.apps.medications.utils import get_medication_progress
 from health_tracker.apps.metrics.forms import ActivityHistoryForm, MetricEditForm
 from health_tracker.apps.metrics.models import HealthMetric
@@ -35,19 +35,22 @@ def dashboard_view(request: HttpRequest) -> HttpResponse:
     Returns:
         The rendered dashboard template.
     """
-    patient = request.user.get_patient()
+    user = request.user
+    patient = user.get_patient()
     latest = get_latest_metrics(patient)
     progress = get_medication_progress(patient)
     total_ml = get_today_total_ml(patient)
 
     context = {
         "today": timezone.localdate(),
-        "patient_first_name": patient.first_name or patient.username,
+        "user_first_name": user.first_name or user.username,
+        "patient_full_name": patient.get_full_name().strip() or patient.username,
+        "is_caregiver": user.is_caregiver,
         "latest_bp": latest[HealthMetric.MetricType.BLOOD_PRESSURE],
         "latest_weight": latest[HealthMetric.MetricType.WEIGHT],
         "medication_progress": progress,
         "total_ml": total_ml,
-        "daily_target_ml": DAILY_TARGET_ML,
+        "daily_target_ml": patient.daily_water_target_ml,
         "recent_activities": get_recent_activities(patient, limit=5),
     }
     return render(request, "dashboard.html", context)

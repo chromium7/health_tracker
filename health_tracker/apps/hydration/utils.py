@@ -8,8 +8,6 @@ from django.utils import timezone
 from health_tracker.apps.hydration.models import WaterIntakeLog
 from health_tracker.apps.users.models import User
 
-DAILY_TARGET_ML: int = 2000
-
 MIN_VOLUME_ML: int = 1
 MAX_VOLUME_ML: int = 2000
 

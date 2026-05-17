@@ -18,7 +18,10 @@
       {% include "_icons.html" with icon="calendar" size=22 %}
     </span>
     <div class="greeting__text">
-      <span class="greeting__line">Halo, {{ patient_first_name }}</span>
+      <span class="greeting__title">Halo, {{ user_first_name }}</span>
+      {% if is_caregiver %}
+        <span class="greeting__line">Memantau {{ patient_full_name }}</span>
+      {% endif %}
     </div>
   </section>
 
@@ -89,7 +92,6 @@
                   <span class="recent-row__time">{{ activity.timestamp|date:"j M, H.i" }}</span>
                 </div>
                 <span class="recent-row__value">{{ activity.value_display }}</span>
-                <span class="recent-row__patient">{{ activity.patient_name }}</span>
               </div>
             </a>
           </li>

@@ -85,13 +85,20 @@ class WaterViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_renders_total_and_drinks(self) -> None:
+        self.patient.daily_water_target_ml = 1500
+        self.patient.save(update_fields=["daily_water_target_ml"])
         WaterIntakeLog.objects.create(patient=self.patient, volume_ml=250)
         WaterIntakeLog.objects.create(patient=self.patient, volume_ml=500)
         self.client.force_login(self.patient)
         response = self.client.get(reverse("water"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "750")
-        self.assertContains(response, "dari 2000 ml")
+        self.assertContains(response, "dari 1500 ml")
+
+    def test_daily_target_defaults_to_750(self) -> None:
+        self.client.force_login(self.patient)
+        response = self.client.get(reverse("water"))
+        self.assertContains(response, "dari 750 ml")
 
 
 class DrinkDetailEditDeleteTests(TestCase):

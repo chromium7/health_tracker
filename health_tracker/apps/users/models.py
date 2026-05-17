@@ -41,6 +41,10 @@ class User(AbstractUser):
         related_name="caregivers",
         help_text="Caregivers only: the patient this account monitors.",
     )
+    daily_water_target_ml = models.PositiveIntegerField(
+        default=750,
+        help_text="Patients only: daily water intake target in millilitres.",
+    )
 
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["pin", "role"]

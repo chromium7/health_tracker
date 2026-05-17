@@ -6,7 +6,6 @@ from django.test import TestCase
 
 from health_tracker.apps.hydration.models import WaterIntakeLog
 from health_tracker.apps.hydration.utils import (
-    DAILY_TARGET_ML,
     MAX_VOLUME_ML,
     MIN_VOLUME_ML,
     get_today_total_ml,
@@ -15,14 +14,19 @@ from health_tracker.apps.users.models import User
 
 
 class VolumeBoundsTests(TestCase):
-    """Sanity checks for the volume bounds and daily target constants."""
+    """Sanity checks for the volume bounds and per-patient daily target."""
 
     def test_bounds_are_positive(self) -> None:
         self.assertGreater(MIN_VOLUME_ML, 0)
         self.assertGreater(MAX_VOLUME_ML, MIN_VOLUME_ML)
 
-    def test_daily_target_is_two_litres(self) -> None:
-        self.assertEqual(DAILY_TARGET_ML, 2000)
+    def test_default_daily_target_is_750ml(self) -> None:
+        patient = User.objects.create(
+            username="default_pat",
+            pin="0000",
+            role=User.Role.PATIENT,
+        )
+        self.assertEqual(patient.daily_water_target_ml, 750)
 
 
 class GetTodayTotalMlTests(TestCase):

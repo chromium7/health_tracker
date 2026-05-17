@@ -60,7 +60,6 @@ class ActivityItem:
         kind: ``"metric"``, ``"water"``, or ``"medication"``.
         metric_type: For metric rows, the ``HealthMetric.MetricType`` value.
         object_id: Primary key of the underlying record.
-        patient_name: Display name of the patient who owns the record.
         label: Short Indonesian label (e.g. ``"Tekanan Darah"``).
         value_display: Pre-formatted value string.
         timestamp: When the activity occurred.
@@ -72,7 +71,6 @@ class ActivityItem:
     kind: str
     metric_type: str | None
     object_id: int
-    patient_name: str
     label: str
     value_display: str
     timestamp: datetime
@@ -166,22 +164,17 @@ def get_metric_cards(patient: User) -> list[dict[str, Any]]:
     ]
 
 
-def _patient_display(patient: User) -> str:
-    """Return a short label for ``patient`` used in the activity feed."""
-    full = patient.get_full_name().strip()
-    return full or patient.username
-
-
 def _metric_to_activity(metric: HealthMetric) -> ActivityItem:
     """Convert a ``HealthMetric`` row to an ``ActivityItem``."""
-    icon = "user" if metric.metric_type == HealthMetric.MetricType.WEIGHT else (
-        "drop" if metric.metric_type == HealthMetric.MetricType.OXYGEN_SATURATION else "heart"
+    icon = (
+        "user"
+        if metric.metric_type == HealthMetric.MetricType.WEIGHT
+        else ("drop" if metric.metric_type == HealthMetric.MetricType.OXYGEN_SATURATION else "heart")
     )
     return ActivityItem(
         kind=KIND_METRIC,
         metric_type=metric.metric_type,
         object_id=metric.pk,
-        patient_name=_patient_display(metric.patient),
         label=METRIC_LABELS_ID[metric.metric_type],
         value_display=metric.display_value,
         timestamp=metric.created_at,
@@ -197,7 +190,6 @@ def _water_to_activity(log: WaterIntakeLog) -> ActivityItem:
         kind=KIND_WATER,
         metric_type=None,
         object_id=log.pk,
-        patient_name=_patient_display(log.patient),
         label="Minum",
         value_display=f"{log.volume_ml} ml",
         timestamp=log.created_at,
@@ -215,7 +207,6 @@ def _medication_to_activity(log: MedicationLog) -> ActivityItem:
         kind=KIND_MEDICATION,
         metric_type=None,
         object_id=log.pk,
-        patient_name=_patient_display(medication.patient),
         label="Obat",
         value_display=f"{medication.name}{dosage}",
         timestamp=log.taken_at,

@@ -9,7 +9,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 from health_tracker.apps.hydration.forms import WaterEntryEditForm, WaterEntryForm
 from health_tracker.apps.hydration.models import WaterIntakeLog
 from health_tracker.apps.hydration.utils import (
-    DAILY_TARGET_ML,
     get_today_total_ml,
     get_today_water_logs,
 )
@@ -28,11 +27,12 @@ def water_view(request: HttpRequest) -> HttpResponse:
     patient = request.user.get_patient()
     total_ml = get_today_total_ml(patient)
     drinks = list(get_today_water_logs(patient))
-    progress_pct = min(int(round((total_ml / DAILY_TARGET_ML) * 100)), 100) if DAILY_TARGET_ML else 0
+    daily_target_ml = patient.daily_water_target_ml
+    progress_pct = min(int(round((total_ml / daily_target_ml) * 100)), 100) if daily_target_ml else 0
     context = {
         "form": WaterEntryForm(),
         "total_ml": total_ml,
-        "daily_target_ml": DAILY_TARGET_ML,
+        "daily_target_ml": daily_target_ml,
         "progress_pct": progress_pct,
         "drinks": drinks,
     }
