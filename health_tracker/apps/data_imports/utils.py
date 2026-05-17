@@ -233,7 +233,13 @@ def _build_water(row: dict[str, str], patient: User, created_at: datetime) -> Wa
     volume_ml = _require_int(row, "volume_ml")
     if volume_ml <= 0:
         raise ValueError("volume_ml must be positive")
-    return WaterIntakeLog(patient=patient, volume_ml=volume_ml, created_at=created_at)
+    notes = (row.get("notes") or "").strip()
+    return WaterIntakeLog(
+        patient=patient,
+        volume_ml=volume_ml,
+        notes=notes,
+        created_at=created_at,
+    )
 
 
 def _build_medication_log(

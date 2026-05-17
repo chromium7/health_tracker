@@ -158,6 +158,18 @@ class ParseCSVTests(TestCase):
         self.assertEqual(len(parsed.medication_logs), 1)
         self.assertEqual(parsed.medication_logs[0].medication_id, self.medication.pk)
 
+    def test_water_notes_are_imported(self) -> None:
+        upload = _csv(
+            [
+                "activity_type,created_at,volume_ml,notes",
+                "water,2026-05-10 08:00,250,  setelah olahraga  ",
+            ]
+        )
+        parsed, errors = parse_csv(upload.read(), self.patient)
+        self.assertEqual(errors, [])
+        self.assertEqual(len(parsed.waters), 1)
+        self.assertEqual(parsed.waters[0].notes, "setelah olahraga")
+
     def test_water_volume_must_be_positive(self) -> None:
         upload = _csv(
             [
