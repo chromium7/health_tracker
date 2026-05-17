@@ -26,7 +26,7 @@
 
     <div class="field">
       <label class="field__label" for="{{ form.stop_reason.id_for_label }}">Alasan</label>
-      <select class="field__input-control"
+      <select class="field__input-control field__input-control--note"
               name="{{ form.stop_reason.name }}"
               id="{{ form.stop_reason.id_for_label }}"
               required>
@@ -41,7 +41,7 @@
 
     <div class="field">
       <label class="field__label" for="{{ form.stopped_at.id_for_label }}">Tanggal Berhenti</label>
-      <input class="field__input-control"
+      <input class="field__input-control field__input-control--note"
              type="date"
              name="{{ form.stopped_at.name }}"
              id="{{ form.stopped_at.id_for_label }}"
