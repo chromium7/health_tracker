@@ -727,6 +727,7 @@ button {
 
 .progress-bar__fill {
   background: var(--gradient-primary);
+  display: block;
   height: 100%;
 }
 
